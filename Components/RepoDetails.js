@@ -10,6 +10,7 @@ import {
   Button,
 } from 'react-native';
 import React, {useEffect, useState, useCallback} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Shimmer from './Shimmer';
 import {IMAGES} from '../Assests';
 import Error from './Error';
@@ -25,7 +26,17 @@ const RepoDetails = () => {
 
   useEffect(() => {
     fetchRepo();
-  }, [refresh]);
+  }, []);
+
+  const storeDataLocally = async data => {
+    try {
+      const jsonData = JSON.stringify(data);
+      await AsyncStorage.setItem('apiData', jsonData);
+      console.log('Data stored locally successfully!');
+    } catch (err) {
+      console.error('Error storing data locally:', err);
+    }
+  };
 
   const fetchRepo = async () => {
     try {
@@ -34,9 +45,11 @@ const RepoDetails = () => {
       const data = await fetch(URL);
       // console.log(URL, '--');
       const res = await data.json();
+      await storeDataLocally(res);
       setRepo(res);
       setLoading(false);
     } catch (err) {
+      // console.log('Unable to Fetch');
       setError(true);
       setLoading(false);
     }
@@ -47,11 +60,29 @@ const RepoDetails = () => {
     setRefresh(!refresh);
   };
 
+  const loadDataLocally = async () => {
+    try {
+      const jsonData = await AsyncStorage.getItem('apiData');
+      if (jsonData !== null) {
+        const data = JSON.parse(jsonData);
+        console.log('Data loaded from local storage:', data);
+        // Use the data as needed
+        setRepo(data);
+      } else {
+        console.log('No data found in local storage.');
+      }
+    } catch (err) {
+      // Handle error
+      console.error('Error loading data from local storage:', err);
+    }
+  };
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
       setRefreshing(false);
       setRefresh(!refresh);
+      loadDataLocally();
     }, 1000);
   }, [refresh]);
 
@@ -171,7 +202,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     top: 2,
     padding: 4,
-    // marginHorizontal: 4,
+    marginHorizontal: 4,
   },
   iconRow: {
     // display: 'flex',
