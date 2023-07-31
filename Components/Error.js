@@ -2,10 +2,8 @@ import {Button, Image, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {IMAGES} from '../Assests';
 
-const Error = () => {
-  //   const randomValue = Math.ceil(Math.random());
-  //   console.log(Math.ceil(randomValue), 'val');
-  const handlePress = () => {};
+const Error = props => {
+  const {handleError} = props;
 
   return (
     <View style={styles.imageError}>
@@ -14,7 +12,7 @@ const Error = () => {
         An Allien is Probably blocking the Network
       </Text>
       <View style={styles.buttonContainer}>
-        <Button title="Retry" style={styles.button} onPress={handlePress} />
+        <Button title="Retry" style={styles.button} onPress={handleError} />
       </View>
     </View>
   );
@@ -37,7 +35,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   buttonContainer: {
-    top: 190,
+    top: 160,
     width: '90%',
   },
   button: {},

@@ -7,14 +7,13 @@ import {
   SafeAreaView,
   ScrollView,
   RefreshControl,
-  Button,
 } from 'react-native';
 import React, {useEffect, useState, useCallback} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Shimmer from './Shimmer';
-import {IMAGES} from '../Assests';
 import Error from './Error';
 import {PROD_URL, URL} from './Constants';
+import Details from './Details';
 
 const RepoDetails = () => {
   const [repo, setRepo] = useState(null);
@@ -23,10 +22,11 @@ const RepoDetails = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [error, setError] = useState(false);
+  const [url, setUrl] = useState(URL);
 
   useEffect(() => {
     fetchRepo();
-  }, []);
+  }, [refresh]);
 
   const storeDataLocally = async data => {
     try {
@@ -41,16 +41,13 @@ const RepoDetails = () => {
   const fetchRepo = async () => {
     try {
       setLoading(true);
-      // console.log(URL, 'before--');
-      const data = await fetch(URL);
-      // console.log(URL, '--');
+      const data = await fetch(url);
       const res = await data.json();
       await storeDataLocally(res);
       setRepo(res);
       setLoading(false);
       setError(false);
     } catch (err) {
-      // console.log('Unable to Fetch');
       setError(true);
       setLoading(false);
     }
@@ -59,6 +56,7 @@ const RepoDetails = () => {
   const handleErrorButtonPress = () => {
     console.log('Error Button Pressed');
     setRefresh(!refresh);
+    setUrl(URL);
   };
 
   const loadDataLocally = async () => {
@@ -67,13 +65,11 @@ const RepoDetails = () => {
       if (jsonData !== null) {
         const data = JSON.parse(jsonData);
         console.log('Data loaded from local storage:', data);
-        // Use the data as needed
         setRepo(data);
       } else {
         console.log('No data found in local storage.');
       }
     } catch (err) {
-      // Handle error
       console.error('Error loading data from local storage:', err);
     }
   };
@@ -92,21 +88,7 @@ const RepoDetails = () => {
   };
 
   if (error) {
-    return (
-      <View style={styles.imageError}>
-        <Image style={styles.errorImage} source={IMAGES.error} />
-        <Text style={styles.errorText}>
-          An Allien is Probably blocking the Network
-        </Text>
-        <View style={styles.buttonContainer}>
-          <Button
-            title="Retry"
-            style={styles.button}
-            onPress={handleErrorButtonPress}
-          />
-        </View>
-      </View>
-    );
+    return <Error handleError={handleErrorButtonPress} />;
   }
 
   if (loading) {
@@ -136,25 +118,7 @@ const RepoDetails = () => {
                       />
                     </View>
                     {item.url === uniqueid ? (
-                      <View style={styles.textContainer}>
-                        <Text>{item.author}</Text>
-                        <Text style={styles.text}>{item.name}</Text>
-                        <Text>{item.description}</Text>
-                        <View style={styles.row}>
-                          <View style={styles.iconRow}>
-                            <Image source={IMAGES.dot} style={styles.icon} />
-                            <Text style={styles.text}>{item.language}</Text>
-                          </View>
-                          <View style={styles.iconRow}>
-                            <Image source={IMAGES.star} style={styles.icon} />
-                            <Text style={styles.text}>{item.stars}</Text>
-                          </View>
-                          <View style={styles.iconRow}>
-                            <Image source={IMAGES.fork} style={styles.icon} />
-                            <Text style={styles.text}>{item.forks}</Text>
-                          </View>
-                        </View>
-                      </View>
+                      <Details item={item} />
                     ) : (
                       <View style={styles.textContainer}>
                         <Text>{item.author}</Text>
@@ -191,25 +155,6 @@ const styles = StyleSheet.create({
   text: {
     fontWeight: 'bold',
   },
-  row: {
-    display: 'flex',
-    justifyContent: 'space-around',
-    flexDirection: 'row',
-    marginTop: 16,
-  },
-  icon: {
-    width: 16,
-    height: 16,
-    resizeMode: 'contain',
-    borderRadius: 10,
-    top: 2,
-    padding: 4,
-    marginHorizontal: 4,
-  },
-  iconRow: {
-    // display: 'flex',
-    flexDirection: 'row',
-  },
   imageError: {
     display: 'flex',
     justifyContent: 'center',
@@ -224,7 +169,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   buttonContainer: {
-    top: 190,
+    top: 160,
     width: '90%',
   },
   button: {},
