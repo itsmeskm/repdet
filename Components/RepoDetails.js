@@ -48,6 +48,7 @@ const RepoDetails = () => {
       await storeDataLocally(res);
       setRepo(res);
       setLoading(false);
+      setError(false);
     } catch (err) {
       // console.log('Unable to Fetch');
       setError(true);
@@ -193,7 +194,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'space-around',
     flexDirection: 'row',
-    marginTop: 8,
+    marginTop: 16,
   },
   icon: {
     width: 16,
