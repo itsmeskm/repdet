@@ -62,8 +62,8 @@ const RepoDetails = () => {
   if (error) {
     return (
       <View style={styles.imageError}>
-        <Image style={styles.image} source={IMAGES.error} />
-        <Text style={styles.text}>
+        <Image style={styles.errorImage} source={IMAGES.error} />
+        <Text style={styles.errorText}>
           An Allien is Probably blocking the Network
         </Text>
         <View style={styles.buttonContainer}>
@@ -177,4 +177,22 @@ const styles = StyleSheet.create({
     // display: 'flex',
     flexDirection: 'row',
   },
+  imageError: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    top: 100,
+  },
+  errorImage: {
+    height: 300,
+    width: 300,
+  },
+  errorText: {
+    marginTop: 12,
+  },
+  buttonContainer: {
+    top: 190,
+    width: '90%',
+  },
+  button: {},
 });
