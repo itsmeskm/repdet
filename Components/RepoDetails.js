@@ -163,6 +163,7 @@ const RepoDetails = () => {
                     )}
                   </View>
                 </TouchableHighlight>
+                <View style={styles.line} />
               </View>
             );
           })}
@@ -227,4 +228,11 @@ const styles = StyleSheet.create({
     width: '90%',
   },
   button: {},
+  line: {
+    borderBottomColor: 'grey',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    width: '90%',
+    marginLeft: 24,
+    marginVertical: 12,
+  },
 });
